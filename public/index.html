@@ -1,0 +1,16 @@
+<!doctype html>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<script type="module">
+  import './platinum.js'
+  import './store.js'
+  import './hnCard.js'
+</script>
+<platinum-store>
+  <platinum-for-each in="hnStories">
+    <template>
+      <x-hn-card></x-hn-card>
+    </template>
+  </platinum-for-each>
+</platinum-store>

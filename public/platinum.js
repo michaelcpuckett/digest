@@ -28,6 +28,7 @@ window.customElements.define('platinum-if', class PlatinumForEach extends HTMLEl
     }
     if (show) {
       this.appendChild(this.element)
+      this.getRootNode().host.$render()
     } else {
       if (this.element) {
         this.fragment.append(this.element)
@@ -97,10 +98,9 @@ export class PlatinumElement extends HTMLElement {
     const $observedProps = this.constructor.$observedProps
     if ($observedProps) {
       $observedProps().forEach(key => {
-        if (this.hasAttribute(key) || key in this) {
-          const value = this.hasAttribute(key) ? this.getAttribute(key) : key[this]
-          this[`$${key}`] = value
-          this.inject(key, this[key])
+        if (key in this) {
+          this[`$${key}`] = this[key]
+          this.$inject(key, this[key])
           this.removeAttribute(key)
         }
         Object.defineProperty(this, key, {
@@ -109,14 +109,17 @@ export class PlatinumElement extends HTMLElement {
           },
           set(value) {
             this[`$${key}`] = value
-            this.inject(key, value)
+            this.$inject(key, value)
             this.dispatchEvent(new CustomEvent(`$change_${key}`, { detail: value }))
           }
         })
       })
     }
   }
-  inject(key, value) {
+  get(key) {
+    return this[key]
+  }
+  $inject(key, value) {
     if (!this.querySelector(`[slot="${key}"]`)) {
       const element = window.document.createElement('data')
       element.setAttribute('slot', key)
@@ -126,5 +129,16 @@ export class PlatinumElement extends HTMLElement {
       node.setAttribute(node.getAttribute(`data-attr-${key}`), value)
     })
     this.querySelector(`[slot="${key}"]`).innerHTML = value
+  }
+  $render() {
+    const $observedProps = this.constructor.$observedProps
+    if ($observedProps) {
+      $observedProps().forEach(key => {
+        console.log(this)
+        ;[...this.shadowRoot.querySelectorAll([`[data-attr-${key}]`])].forEach(node => {
+          node.setAttribute(node.getAttribute(`data-attr-${key}`), this[key])
+        })
+      })
+    }
   }
 }

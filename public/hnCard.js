@@ -9,11 +9,18 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
       'by',
       'url',
       'score',
-      'toggled'
+      'toggled',
+      'kids',
+      'topcommentid'
     ]
   }
   set $title(value) {
     this.arialabelid = value ? `hn-card-${value.toLowerCase().replace(/ /g, '-')}` : null
+  }
+  set $kids(value) {
+    if (Array.isArray(value) && value.length) {
+      this.topcommentid = value[0]
+    }
   }
   handleClick() {
     this.toggled = !this.toggled
@@ -60,7 +67,9 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
           <platinum-if condition="toggled">
             <template>
               <div>
-                Test
+                <hn-comment data-attr-topcommentid="id">
+                  Test
+                </hn-comment>
               </div>
             </template>
           </platinum-if>

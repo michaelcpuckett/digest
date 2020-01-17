@@ -9,7 +9,8 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
       'by',
       'url',
       'score',
-      'toggled',
+      'firsttoggled',
+      'alltoggled',
       'kids',
       'topcommentid',
       'text'
@@ -21,6 +22,8 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
   set $kids([]) {
     if (Array.isArray(this.kids) && this.kids.length) {
       this.topcommentid = this.kids[0]
+      const [ first, ...comments ] = this.kids
+      this.allcomments = comments.map(id => ({ id }))
     }
   }
   set $id([value, prev]) {
@@ -37,11 +40,15 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
       }
     })
   }
-  handleClick() {
-    this.toggled = !(this.toggled && this.toggled !== 'false')
+  toggleFirst() {
+    this.firsttoggled = !(this.firsttoggled && this.firsttoggled !== 'false')
+  }
+  toggleAll() {
+    this.alltoggled = !(this.alltoggled && this.alltoggled !== 'false')
   }
   connectedCallback() {
-    this.toggled = false
+    this.firsttoggled = false
+    this.alltoggled = false
   }
   constructor() {
     super({
@@ -95,15 +102,15 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
           <platinum-if condition="topcommentid">
             <template>
               <div property="comment" typeof="Comment">
-                <button data-attr-toggled="aria-pressed" onclick="this.getRootNode().host.handleClick(event)">
-                  <platinum-if condition="toggled">
+                <button data-attr-firsttoggled="aria-pressed" onclick="this.getRootNode().host.toggleFirst(event)">
+                  <platinum-if condition="firsttoggled">
                     <template>
                       <span>
                         Hide
                       </span>
                     </template>
                   </platinum-if>
-                  <platinum-if not="toggled">
+                  <platinum-if not="firsttoggled">
                     <template>
                       <span>
                         Show
@@ -112,9 +119,25 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
                   </platinum-if>
                   Comments
                 </button>
-                <platinum-if condition="toggled">
+                <platinum-if condition="firsttoggled">
                   <template>
-                    <x-hn-card data-attr-topcommentid="id"></x-hn-card>
+                    <div>
+                      <x-hn-card data-attr-topcommentid="id"></x-hn-card>
+                      <div>
+                        <button data-attr-alltoggled="aria-pressed" onclick="this.getRootNode().host.toggleAll(event)">
+                          Toggle All
+                        </button>
+                        <platinum-if condition="alltoggled">
+                          <template>
+                            <platinum-for-each in="allcomments">
+                              <template>
+                                <x-hn-card></x-hn-card>
+                              </template>
+                            </platinum-for-each>
+                          </template>
+                        </platinum-if>
+                      </div>
+                    </div>
                   </template>
                 </platinum-if>
               </div>
@@ -165,7 +188,7 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
             grid-template-rows: [top] auto [bottom] 1fr;
             grid-template-columns: [left] 1fr [right] min-content;
           }
-          button[data-attr-toggled] {
+          button[data-attr-firsttoggled] {
             grid-column-start: right;
             grid-row-start: top;
             grid-row-end: bottom;

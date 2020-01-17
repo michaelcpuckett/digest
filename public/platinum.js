@@ -8,6 +8,16 @@ export class PlatinumStore extends HTMLElement {
         return true
       }
     })
+    Object.keys(initialState).forEach(key => {
+      Object.defineProperty(this, key, {
+        get: () => {
+          return this.state[key]
+        },
+        set: (value) => {
+          this.state[key] = value
+        }
+      })
+    })
   }
 }
 
@@ -89,16 +99,16 @@ window.customElements.define('platinum-for-each', class PlatinumForEach extends 
     this.style.display = 'contents'
     const content = this.querySelector('template').content
     window.requestAnimationFrame(() => {
-      const $store = this.closest('platinum-store')
+      const $store = this.getRootNode().host || this.parentElement
       if (this.in) {
         {
-          const each = $store.state[this.in]
+          const each = $store[this.in]
           if (Array.isArray(each) && each.length) {
             each.map(data => Object.assign(content.cloneNode(true).firstElementChild, data)).forEach(node => this.shadowRoot.append(node))
           }
         }
         $store.addEventListener(`$change_${this.in}`, () => {
-          const each = $store.state[this.in]
+          const each = $store[this.in]
           if (Array.isArray(each) && each.length) {
             ;[...this.shadowRoot.children].forEach(node => node.remove())
             each.map(data => Object.assign(content.cloneNode(true).firstElementChild, data)).forEach(node => this.shadowRoot.append(node))

@@ -4,7 +4,7 @@ export class PlatinumStore extends HTMLElement {
     this.state = new Proxy(initialState, {
       set: (_this, key, value) => {
         _this[key] = value
-        // propagate changes
+        this.dispatchEvent(new CustomEvent(`$change_${key}`, { detail: value }))
         return true
       }
     })
@@ -22,11 +22,21 @@ window.customElements.define('platinum-for-each', class PlatinumForEach extends 
   connectedCallback() {
     const content = this.querySelector('template').content
     window.requestAnimationFrame(() => {
+      const $store = this.closest('platinum-store')
       if (this.in) {
-        const each = this.closest('platinum-store').state[this.in]
-        if (Array.isArray(each) && each.length) {
-          each.map(data => Object.assign(content.cloneNode(true).firstElementChild, data)).forEach(node => this.shadowRoot.append(node))
+        {
+          const each = $store.state[this.in]
+          if (Array.isArray(each) && each.length) {
+            each.map(data => Object.assign(content.cloneNode(true).firstElementChild, data)).forEach(node => this.shadowRoot.append(node))
+          }
         }
+        $store.addEventListener(`$change_${this.in}`, () => {
+          const each = $store.state[this.in]
+          if (Array.isArray(each) && each.length) {
+            ;[...this.shadowRoot.children].forEach(node => node.remove())
+            each.map(data => Object.assign(content.cloneNode(true).firstElementChild, data)).forEach(node => this.shadowRoot.append(node))
+          }
+        })
       }
     })
   }

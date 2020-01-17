@@ -74,7 +74,7 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
             padding: .4rem 0;
           }
         </style>
-        <platinum-if not="deleted">
+        <p-if not="deleted">
           <template>
             <article
               data-attr-arialabelid="aria-labelledby"
@@ -83,7 +83,7 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
                 <span class="visually-hidden">By</span>
                 <slot name="by"></slot>
               </div>
-              <platinum-if condition="url">
+              <p-if condition="url">
                 <template>
                   <div
                     property="sharedContent"
@@ -97,8 +97,8 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
                     </a>
                   </div>
                 </template>
-              </platinum-if>
-              <platinum-if condition="score">
+              </p-if>
+              <p-if condition="score">
                 <template>
                   <div
                     property="interactionStatistic"
@@ -114,35 +114,35 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
                     </span>
                   </div>
                 </template>
-              </platinum-if>
-              <platinum-if condition="text">
+              </p-if>
+              <p-if condition="text">
                 <template>
                   <div property="articleBody">
                     <slot name="text"></slot>
                   </div>
                 </template>
-              </platinum-if>
-              <platinum-if condition="topcommentid">
+              </p-if>
+              <p-if condition="topcommentid">
                 <template>
                   <div>
                     <button data-attr-firsttoggled="aria-pressed" onclick="this.getRootNode().host.toggleFirst(event)">
-                      <platinum-if condition="firsttoggled">
+                      <p-if condition="firsttoggled">
                         <template>
                           <span>
                             Hide
                           </span>
                         </template>
-                      </platinum-if>
-                      <platinum-if not="firsttoggled">
+                      </p-if>
+                      <p-if not="firsttoggled">
                         <template>
                           <span>
                             Show
                           </span>
                         </template>
-                      </platinum-if>
+                      </p-if>
                       Comments
                     </button>
-                    <platinum-if condition="firsttoggled">
+                    <p-if condition="firsttoggled">
                       <template>
                         <div>
                           <x-hn-card data-attr-topcommentid="id"></x-hn-card>
@@ -150,25 +150,25 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
                             <button data-attr-alltoggled="aria-pressed" onclick="this.getRootNode().host.toggleAll(event)">
                               Toggle All
                             </button>
-                            <platinum-if condition="alltoggled">
+                            <p-if condition="alltoggled">
                               <template>
-                                <platinum-for-each in="allcomments">
+                                <p-for-each in="allcomments">
                                   <template>
                                     <x-hn-card></x-hn-card>
                                   </template>
-                                </platinum-for-each>
+                                </p-for-each>
                               </template>
-                            </platinum-if>
+                            </p-if>
                           </div>
                         </div>
                       </template>
-                    </platinum-if>
+                    </p-if>
                   </div>
                 </template>
-              </platinum-if>
+              </p-if>
             </article>
           </template>
-        </platinum-if>
+        </p-if>
       `
     })
   }

@@ -25,7 +25,7 @@ export class PlatinumStore extends HTMLElement {
 
 
 
-window.customElements.define('platinum-if', class PlatinumForEach extends HTMLElement {
+window.customElements.define('p-if', class PlatinumForEach extends HTMLElement {
   constructor() {
     super()
   }
@@ -87,7 +87,7 @@ window.customElements.define('platinum-if', class PlatinumForEach extends HTMLEl
 
 
 
-window.customElements.define('platinum-for-each', class PlatinumForEach extends HTMLElement {
+window.customElements.define('p-for-each', class PlatinumForEach extends HTMLElement {
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })

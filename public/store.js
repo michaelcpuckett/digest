@@ -1,6 +1,6 @@
 import { PlatinumStore } from './platinum.js'
 
-window.customElements.define('platinum-store', class extends PlatinumStore {
+window.customElements.define('p-store', class extends PlatinumStore {
   constructor() {
     super({
       hnStories: []

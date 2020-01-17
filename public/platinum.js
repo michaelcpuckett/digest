@@ -23,12 +23,14 @@ window.customElements.define('platinum-if', class PlatinumForEach extends HTMLEl
     return this.getAttribute('condition')
   }
   toggle(show) {
+    console.log(show)
+    show = show && show !== 'false'
     if (!this.element) {
       this.element = (this.template.content.cloneNode(true).firstElementChild)
     }
     if (show) {
       this.appendChild(this.element)
-      this.getRootNode().host.$render()
+      this.getRootNode().host.$render() // TODO mutationobserver
     } else {
       if (this.element) {
         this.fragment.append(this.element)
@@ -43,7 +45,7 @@ window.customElements.define('platinum-if', class PlatinumForEach extends HTMLEl
       if (this.condition) {
         const { host } = this.getRootNode()
         if (host[this.condition]) {
-          this.toggle(this.condition)
+          this.toggle(host[this.condition])
         }
         host.addEventListener(`$change_${this.condition}`, ({ detail: value }) => {
           this.toggle(value)
@@ -105,6 +107,7 @@ export class PlatinumElement extends HTMLElement {
       },
       set: (_, key, value) => {
         _[key] = value
+        this[`$${key}`] = value
         this.$inject(key, value[0])
         this.dispatchEvent(new CustomEvent(`$change_${key}`, { detail: value[0] }))
         return true
@@ -117,10 +120,14 @@ export class PlatinumElement extends HTMLElement {
         this.state[key] = [this[key]]
         Object.defineProperty(this, key, {
           get() {
-            return (this.state[key] || [])[0]
+            return this.state[key]
           },
           set(value) {
-            this.setAttribute(key, value)
+            if (typeof value !== 'undefined' && value !== null) {
+              this.setAttribute(key, value)
+            } else {
+              this.removeAttribute(value)
+            }
           }
         })
       })

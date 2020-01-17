@@ -14,34 +14,36 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
       'topcommentid'
     ]
   }
-  set title(value) {
+  set $title([value]) {
     this.arialabelid = value ? `hn-card-${value.toLowerCase().replace(/ /g, '-')}` : null
   }
-  set kids(value) {
+  set $kids([value]) {
     if (Array.isArray(value) && value.length) {
       this.topcommentid = value[0]
     }
   }
-  set id([value, prev]) {
-    console.log(value, this)
-    if (prev && (value !== prev) || !super.title) {
-      console.log('FETCH')
-      window.requestAnimationFrame(() => {
-        if (!super.title) {
-          ;(async () => {
-            // Object.assign(this,
-              // (
-                // await fetch(`https://hacker-news.firebaseio.com/v0/item/${value}.json`)
-                // .then(res => res.json())
-              // )
-            // )
-          })()
-        }
-      })
-    }
+  set $id([value, prev]) {
+    window.requestAnimationFrame(() => {
+      console.log(this.id, value.length)
+      if (value && value.length && prev && (value !== prev) || !this.title) {
+        console.log('FETCH', this.getAttribute('id'), 'PREV', prev)
+        Object.assign(this, {
+          id: value,
+          title: 'Wow'
+        })
+        ;(async () => {
+          Object.assign(this,
+            (
+              await fetch(`https://hacker-news.firebaseio.com/v0/item/${value}.json`)
+              .then(res => res.json())
+            )
+          )
+        })()
+      }
+    })
   }
   handleClick() {
-    this.toggled = !this.toggled
+    this.toggled = !(this.toggled && this.toggled !== 'false')
   }
   connectedCallback() {
     this.toggled = false

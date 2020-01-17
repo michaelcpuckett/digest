@@ -43,13 +43,13 @@ window.customElements.define('x-hn-stories', class extends PlatinumElement {
   }
   async connectedCallback() {
     this.stories = JSON.stringify(await Promise.all((
-        await fetch(`https://hacker-news.firebaseio.com/v0/topstories.json`)
-          .then(res => res.json()))
-          .slice(0, 3) // 30
-          .map(async id =>
-            await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)
-              .then(res => res.json())
-          )
+      await fetch(`https://hacker-news.firebaseio.com/v0/topstories.json`)
+        .then(res => res.json()))
+        .slice(0, 3) // 30
+        .map(async id =>
+          await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)
+            .then(res => res.json())
+        )
     ))
   }
 })

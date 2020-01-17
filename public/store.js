@@ -12,7 +12,7 @@ window.customElements.define('platinum-store', class extends PlatinumStore {
         await fetch(`https://hacker-news.firebaseio.com/v0/topstories.json`)
           .then(res => res.json())
       )
-      .slice(0, 30)
+      .slice(0, 3) // 30
       .map(
         async id => await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)
           .then(res => res.json()))

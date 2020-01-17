@@ -99,27 +99,39 @@ export class PlatinumElement extends HTMLElement {
     templateEl.innerHTML = template
     this.shadowRoot.appendChild(templateEl.content.cloneNode(true))
 
-    const $observedProps = this.constructor.$observedProps
-    if ($observedProps) {
-      $observedProps().forEach(key => {
-        if (key in this) {
-          this[`$${key}`] = this[key]
-          this.$inject(key, this[key])
-        } else if (this.hasAttribute(key)) {
-          this[`$${key}`] = this.getAttribute(key)
-          this.$inject(key, this.getAttribute(key))
+    const { observedAttributes } = this.constructor
+    if (observedAttributes) {
+      observedAttributes.forEach(key => {
+        {
+          const value = this[key]
+          // this[`$${key}`] = [value]
+          if (typeof value !== 'undefined' && typeof value !== null) {
+            this.$inject(key, value)
+          }
         }
         Object.defineProperty(this, key, {
-          get() {
-            return this[`$${key}`]
-          },
           set(value) {
-            this[`$${key}`] = value
+            this[`$${key}`] = [value]
+          }
+        })
+        Object.defineProperty(this, `$${key}`, {
+          // get() {
+          //   return (this[`$${key}`] || [])[0]
+          // }
+          set([value]) {
+            // console.log(this[key], this[`$${key}`], value, super[value], super[`$${value}`])
+            console.log(this)
             this.$inject(key, value)
             this.dispatchEvent(new CustomEvent(`$change_${key}`, { detail: value }))
           }
         })
       })
+    }
+  }
+  attributeChangedCallback(attr, prev, value) {
+    if (this[`$${attr}`] && value !== this[`$${attr}`][0]) {
+      this[`$${attr}`] = [value, prev]
+      this.$render()
     }
   }
   $inject(key, value) {
@@ -134,9 +146,9 @@ export class PlatinumElement extends HTMLElement {
     this.querySelector(`[slot="${key}"]`).innerHTML = value
   }
   $render() {
-    const $observedProps = this.constructor.$observedProps
-    if ($observedProps) {
-      $observedProps().forEach(key => {
+    const { observedAttributes } = this.constructor
+    if (observedAttributes) {
+      observedAttributes.forEach(key => {
         ;[...this.shadowRoot.querySelectorAll([`[data-attr-${key}]`])].forEach(node => {
           node.setAttribute(node.getAttribute(`data-attr-${key}`), this[key])
         })

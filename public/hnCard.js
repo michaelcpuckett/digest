@@ -1,7 +1,7 @@
 import { PlatinumElement } from './platinum.js'
 
 window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement {
-  static $observedProps() {
+  static get observedAttributes() {
     return [
       'id',
       'title',
@@ -14,22 +14,27 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
       'topcommentid'
     ]
   }
-  set $title(value) {
+  set title(value) {
     this.arialabelid = value ? `hn-card-${value.toLowerCase().replace(/ /g, '-')}` : null
   }
-  set $kids(value) {
+  set kids(value) {
     if (Array.isArray(value) && value.length) {
       this.topcommentid = value[0]
     }
   }
-  set $id(value) {
-    console.log(value, '...')
-    if (value) {
+  set id([value, prev]) {
+    console.log(value, this)
+    if (prev && (value !== prev) || !super.title) {
+      console.log('FETCH')
       window.requestAnimationFrame(() => {
         if (!super.title) {
           ;(async () => {
-            Object.assign(this, (await fetch(`https://hacker-news.firebaseio.com/v0/item/${value}.json`)
-            .then(res => res.json())))
+            // Object.assign(this,
+              // (
+                // await fetch(`https://hacker-news.firebaseio.com/v0/item/${value}.json`)
+                // .then(res => res.json())
+              // )
+            // )
           })()
         }
       })

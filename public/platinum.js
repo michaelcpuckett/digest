@@ -22,17 +22,28 @@ window.customElements.define('platinum-if', class PlatinumForEach extends HTMLEl
   get condition() {
     return this.getAttribute('condition')
   }
+  get not() {
+    return this.getAttribute('not')
+  }
   toggle(show) {
-    console.log(show)
+    // console.log(show)
     show = show && show !== 'false'
     if (!this.element) {
       this.element = (this.template.content.cloneNode(true).firstElementChild)
     }
-    if (show) {
-      this.appendChild(this.element)
-      this.getRootNode().host.$render() // TODO mutationobserver
-    } else {
-      if (this.element) {
+    if (this.condition) {
+      if (show) {
+        this.appendChild(this.element)
+        this.getRootNode().host.$render() // TODO mutationobserver
+      } else {
+        this.fragment.append(this.element)
+      }
+    }
+    if (this.not) {
+      if (!show) {
+        this.appendChild(this.element)
+        this.getRootNode().host.$render() // TODO mutationobserver
+      } else {
         this.fragment.append(this.element)
       }
     }
@@ -42,12 +53,19 @@ window.customElements.define('platinum-if', class PlatinumForEach extends HTMLEl
     this.template = this.querySelector('template')
     this.fragment = new DocumentFragment()
     window.requestAnimationFrame(() => {
-      if (this.condition) {
+      if (this.condition || this.not) {
         const { host } = this.getRootNode()
-        if (host[this.condition]) {
-          this.toggle(host[this.condition])
+        if (this.condition) {
+          if (host[this.condition]) {
+            this.toggle(host[this.condition])
+          }
         }
-        host.addEventListener(`$change_${this.condition}`, ({ detail: value }) => {
+        if (this.not) {
+          if (!host[this.condition]) {
+            this.toggle(host[this.condition])
+          }
+        }
+        host.addEventListener(`$change_${this.condition || this.not}`, ({ detail: value }) => {
           this.toggle(value)
         })
       }

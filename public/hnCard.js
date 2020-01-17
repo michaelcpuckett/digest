@@ -11,30 +11,25 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
       'score',
       'toggled',
       'kids',
-      'topcommentid'
+      'topcommentid',
+      'text'
     ]
   }
-  set $title([value]) {
-    this.arialabelid = value ? `hn-card-${value.toLowerCase().replace(/ /g, '-')}` : null
+  set $title([]) {
+    this.arialabelid = this.title ? `hn-card-${this.title.toLowerCase().replace(/ /g, '-')}` : null
   }
-  set $kids([value]) {
-    if (Array.isArray(value) && value.length) {
-      this.topcommentid = value[0]
+  set $kids([]) {
+    if (Array.isArray(this.kids) && this.kids.length) {
+      this.topcommentid = this.kids[0]
     }
   }
   set $id([value, prev]) {
     window.requestAnimationFrame(() => {
-      console.log(this.id, value.length)
-      if (value && value.length && prev && (value !== prev) || !this.title) {
-        console.log('FETCH', this.getAttribute('id'), 'PREV', prev)
-        Object.assign(this, {
-          id: value,
-          title: 'Wow'
-        })
+      if (value && !prev && (!this.text && !this.url && !this.title)) {
         ;(async () => {
           Object.assign(this,
             (
-              await fetch(`https://hacker-news.firebaseio.com/v0/item/${value}.json`)
+              await fetch(`https://hacker-news.firebaseio.com/v0/item/${this.id}.json`)
               .then(res => res.json())
             )
           )
@@ -58,43 +53,71 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
             <span class="visually-hidden">By</span>
             <slot name="by"></slot>
           </div>
-          <div
-            property="sharedContent"
-            typeof="Article">
-            <a data-attr-url="href">
-              <h2
-                data-attr-arialabelid="id"
-                property="headline">
-                <slot name="title"></slot>
-              </h2>
-            </a>
-          </div>
+          <platinum-if condition="url">
+            <template>
+              <div
+                property="sharedContent"
+                typeof="Article">
+                <a data-attr-url="href">
+                  <h2
+                    data-attr-arialabelid="id"
+                    property="headline">
+                    <slot name="title"></slot>
+                  </h2>
+                </a>
+              </div>
+            </template>
+          </platinum-if>
           <platinum-if condition="score">
             <template>
               <div
                 property="interactionStatistic"
                 typeof="InteractionCounter">
-                <button data-attr-toggled="aria-pressed" onclick="this.getRootNode().host.handleClick(event)">
-                  <span property="userInteractionCount">
-                    <slot name="score"></slot>
-                  </span>
-                  <span property="interactionType" value="LikeAction">
-                    points
-                  </span>
-                  <span class="visually-hidden">
-                    (Show comments)
-                  </span>
-                </button>
+                <span property="userInteractionCount">
+                  <slot name="score"></slot>
+                </span>
+                <span property="interactionType" value="LikeAction">
+                  points
+                </span>
+                <span class="visually-hidden">
+                  (Show comments)
+                </span>
+              </div>
+            </template>
+          </platinum-if>
+          <platinum-if condition="text">
+            <template>
+              <div property="articleBody">
+                <slot name="text"></slot>
               </div>
             </template>
           </platinum-if>
           <platinum-if condition="topcommentid">
             <template>
-              <platinum-if condition="toggled">
-                <template>
-                  <x-hn-card data-attr-topcommentid="id"></x-hn-card>
-                </template>
-              </platinum-if>
+              <div property="comment" typeof="Comment">
+                <button data-attr-toggled="aria-pressed" onclick="this.getRootNode().host.handleClick(event)">
+                  <platinum-if condition="toggled">
+                    <template>
+                      <span>
+                        Hide
+                      </span>
+                    </template>
+                  </platinum-if>
+                  <platinum-if not="toggled">
+                    <template>
+                      <span>
+                        Show
+                      </span>
+                    </template>
+                  </platinum-if>
+                  Comments
+                </button>
+                <platinum-if condition="toggled">
+                  <template>
+                    <x-hn-card data-attr-topcommentid="id"></x-hn-card>
+                  </template>
+                </platinum-if>
+              </div>
             </template>
           </platinum-if>
         </article>
@@ -109,7 +132,7 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
           }
           article {
             padding: .8rem;
-            border-bottom: .1rem solid;
+            border-top: .2rem solid;
             margin: .2rem;
             display: grid;
             grid-template-columns: [left] auto [right] minmax(0, 1fr) [end];
@@ -124,20 +147,33 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
             text-align: center;
             display: grid;
             height: 100%;
-            grid-template-columns: 100%;
-            grid-template-rows: 100%;
             font-size: 1.2rem;
           }
           [property="userInteractionCount"] {
             font-size: 1.8rem;
             display: grid;
           }
-          x-hn-card {
-            border-top: .1rem solid;
-            margin-top: .4rem;
+          [property="articleBody"] {
+            grid-row-start: left;
+          }
+          [property="comment"] {
             grid-row-start: end;
             grid-column-start: right;
             grid-column-end: end;
+            display: grid;
+            grid-auto-flow: column;
+            grid-template-rows: [top] auto [bottom] 1fr;
+            grid-template-columns: [left] 1fr [right] min-content;
+          }
+          button[data-attr-toggled] {
+            grid-column-start: right;
+            grid-row-start: top;
+            grid-row-end: bottom;
+          }
+          x-hn-card {
+            margin-top: .4rem;
+            grid-row-start: bottom;
+            grid-column-start: left;
           }
         </style>
       `

@@ -47,10 +47,6 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
   toggleAll() {
     this.alltoggled = !(this.alltoggled && this.alltoggled !== 'false')
   }
-  connectedCallback() {
-    this.firsttoggled = false
-    this.alltoggled = false
-  }
   constructor() {
     super({
       template: `

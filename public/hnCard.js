@@ -9,17 +9,17 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
       'by',
       'url',
       'score',
-      'pressed'
+      'toggled'
     ]
   }
   set $title(value) {
     this.arialabelid = value ? `hn-card-${value.toLowerCase().replace(/ /g, '-')}` : null
   }
   handleClick() {
-    alert('!')
+    this.toggled = !this.toggled
   }
   connectedCallback() {
-    this.pressed = false
+    this.toggled = false
   }
   constructor() {
     super({
@@ -45,7 +45,7 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
           <div
             property="interactionStatistic"
             typeof="InteractionCounter">
-            <button data-attr-pressed="aria-pressed" onclick="this.getRootNode().host.handleClick(event)">
+            <button data-attr-toggled="aria-pressed" onclick="this.getRootNode().host.handleClick(event)">
               <span property="userInteractionCount">
                 <slot name="score"></slot>
               </span>
@@ -57,9 +57,13 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
               </span>
             </button>
           </div>
-          <template>
-            Test
-          </template>
+          <platinum-if condition="toggled">
+            <template>
+              <div>
+                Test
+              </div>
+            </template>
+          </platinum-if>
         </article>
         <style>
           @import 'base.css';

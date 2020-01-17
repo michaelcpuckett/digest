@@ -11,6 +11,48 @@ export class PlatinumStore extends HTMLElement {
   }
 }
 
+
+
+
+
+window.customElements.define('platinum-if', class PlatinumForEach extends HTMLElement {
+  constructor() {
+    super()
+  }
+  get condition() {
+    return this.getAttribute('condition')
+  }
+  toggle(show) {
+    if (!this.element) {
+      this.element = (this.template.content.cloneNode(true).firstElementChild)
+    }
+    if (show) {
+      this.appendChild(this.element)
+    } else {
+      if (this.element) {
+        this.fragment.append(this.element)
+      }
+    }
+  }
+  connectedCallback() {
+    this.template = this.querySelector('template')
+    this.fragment = new DocumentFragment()
+    if (this.condition) {
+      const { host } = this.getRootNode()
+      if (host[this.condition]) {
+        this.toggle(this.condition)
+      }
+      host.addEventListener(`$change_${this.condition}`, ({ detail: value }) => {
+        this.toggle(value)
+      })
+    }
+  }
+})
+
+
+
+
+
 window.customElements.define('platinum-for-each', class PlatinumForEach extends HTMLElement {
   constructor() {
     super()
@@ -68,6 +110,7 @@ export class PlatinumElement extends HTMLElement {
           set(value) {
             this[`$${key}`] = value
             this.inject(key, value)
+            this.dispatchEvent(new CustomEvent(`$change_${key}`, { detail: value }))
           }
         })
       })

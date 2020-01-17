@@ -22,6 +22,19 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
       this.topcommentid = value[0]
     }
   }
+  set $id(value) {
+    console.log(value, '...')
+    if (value) {
+      window.requestAnimationFrame(() => {
+        if (!super.title) {
+          ;(async () => {
+            Object.assign(this, (await fetch(`https://hacker-news.firebaseio.com/v0/item/${value}.json`)
+            .then(res => res.json())))
+          })()
+        }
+      })
+    }
+  }
   handleClick() {
     this.toggled = !this.toggled
   }
@@ -49,28 +62,32 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
               </h2>
             </a>
           </div>
-          <div
-            property="interactionStatistic"
-            typeof="InteractionCounter">
-            <button data-attr-toggled="aria-pressed" onclick="this.getRootNode().host.handleClick(event)">
-              <span property="userInteractionCount">
-                <slot name="score"></slot>
-              </span>
-              <span property="interactionType" value="LikeAction">
-                points
-              </span>
-              <span class="visually-hidden">
-                (Show comments)
-              </span>
-            </button>
-          </div>
-          <platinum-if condition="toggled">
+          <platinum-if condition="score">
             <template>
-              <div>
-                <hn-comment data-attr-topcommentid="id">
-                  Test
-                </hn-comment>
+              <div
+                property="interactionStatistic"
+                typeof="InteractionCounter">
+                <button data-attr-toggled="aria-pressed" onclick="this.getRootNode().host.handleClick(event)">
+                  <span property="userInteractionCount">
+                    <slot name="score"></slot>
+                  </span>
+                  <span property="interactionType" value="LikeAction">
+                    points
+                  </span>
+                  <span class="visually-hidden">
+                    (Show comments)
+                  </span>
+                </button>
               </div>
+            </template>
+          </platinum-if>
+          <platinum-if condition="topcommentid">
+            <template>
+              <platinum-if condition="toggled">
+                <template>
+                  <x-hn-card data-attr-topcommentid="id"></x-hn-card>
+                </template>
+              </platinum-if>
             </template>
           </platinum-if>
         </article>
@@ -107,6 +124,13 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
           [property="userInteractionCount"] {
             font-size: 1.8rem;
             display: grid;
+          }
+          x-hn-card {
+            border-top: .1rem solid;
+            margin-top: .4rem;
+            grid-row-start: end;
+            grid-column-start: right;
+            grid-column-end: end;
           }
         </style>
       `

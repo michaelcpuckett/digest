@@ -36,17 +36,20 @@ window.customElements.define('platinum-if', class PlatinumForEach extends HTMLEl
     }
   }
   connectedCallback() {
+    this.style.display = 'contents'
     this.template = this.querySelector('template')
     this.fragment = new DocumentFragment()
-    if (this.condition) {
-      const { host } = this.getRootNode()
-      if (host[this.condition]) {
-        this.toggle(this.condition)
+    window.requestAnimationFrame(() => {
+      if (this.condition) {
+        const { host } = this.getRootNode()
+        if (host[this.condition]) {
+          this.toggle(this.condition)
+        }
+        host.addEventListener(`$change_${this.condition}`, ({ detail: value }) => {
+          this.toggle(value)
+        })
       }
-      host.addEventListener(`$change_${this.condition}`, ({ detail: value }) => {
-        this.toggle(value)
-      })
-    }
+    })
   }
 })
 
@@ -63,6 +66,7 @@ window.customElements.define('platinum-for-each', class PlatinumForEach extends 
     return this.getAttribute('in')
   }
   connectedCallback() {
+    this.style.display = 'contents'
     const content = this.querySelector('template').content
     window.requestAnimationFrame(() => {
       const $store = this.closest('platinum-store')
@@ -101,7 +105,9 @@ export class PlatinumElement extends HTMLElement {
         if (key in this) {
           this[`$${key}`] = this[key]
           this.$inject(key, this[key])
-          this.removeAttribute(key)
+        } else if (this.hasAttribute(key)) {
+          this[`$${key}`] = this.getAttribute(key)
+          this.$inject(key, this.getAttribute(key))
         }
         Object.defineProperty(this, key, {
           get() {

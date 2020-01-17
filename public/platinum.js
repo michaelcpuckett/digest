@@ -116,9 +116,6 @@ export class PlatinumElement extends HTMLElement {
       })
     }
   }
-  get(key) {
-    return this[key]
-  }
   $inject(key, value) {
     if (!this.querySelector(`[slot="${key}"]`)) {
       const element = window.document.createElement('data')

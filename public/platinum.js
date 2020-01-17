@@ -99,40 +99,35 @@ export class PlatinumElement extends HTMLElement {
     templateEl.innerHTML = template
     this.shadowRoot.appendChild(templateEl.content.cloneNode(true))
 
+    this.state = new Proxy({}, {
+      get: (_, key) => {
+        return (_[key] || [])[0]
+      },
+      set: (_, key, value) => {
+        _[key] = value
+        this.$inject(key, value[0])
+        this.dispatchEvent(new CustomEvent(`$change_${key}`, { detail: value[0] }))
+        return true
+      }
+    })
+
     const { observedAttributes } = this.constructor
     if (observedAttributes) {
       observedAttributes.forEach(key => {
-        {
-          const value = this[key]
-          // this[`$${key}`] = [value]
-          if (typeof value !== 'undefined' && typeof value !== null) {
-            this.$inject(key, value)
-          }
-        }
+        this.state[key] = [this[key]]
         Object.defineProperty(this, key, {
+          get() {
+            return (this.state[key] || [])[0]
+          },
           set(value) {
-            this[`$${key}`] = [value]
-          }
-        })
-        Object.defineProperty(this, `$${key}`, {
-          // get() {
-          //   return (this[`$${key}`] || [])[0]
-          // }
-          set([value]) {
-            // console.log(this[key], this[`$${key}`], value, super[value], super[`$${value}`])
-            console.log(this)
-            this.$inject(key, value)
-            this.dispatchEvent(new CustomEvent(`$change_${key}`, { detail: value }))
+            this.setAttribute(key, value)
           }
         })
       })
     }
   }
   attributeChangedCallback(attr, prev, value) {
-    if (this[`$${attr}`] && value !== this[`$${attr}`][0]) {
-      this[`$${attr}`] = [value, prev]
-      this.$render()
-    }
+    this.state[attr] = [value, prev]
   }
   $inject(key, value) {
     if (!this.querySelector(`[slot="${key}"]`)) {

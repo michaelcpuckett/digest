@@ -24,13 +24,7 @@
 </style>
 <script type="module">
   import './platinum.js'
-  import './store.js'
   import './hnCard.js'
+  import './app.js'
 </script>
-<p-store>
-  <p-for-each in="hnStories">
-    <template>
-      <x-hn-card></x-hn-card>
-    </template>
-  </p-for-each>
-</p-store>
+<p-app type="hn"></p-app>

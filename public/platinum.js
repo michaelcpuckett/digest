@@ -36,7 +36,6 @@ window.customElements.define('p-if', class PlatinumForEach extends HTMLElement {
     return this.getAttribute('not')
   }
   toggle(show) {
-    // console.log(show)
     show = show && show !== 'false'
     if (!this.element) {
       this.element = (this.template.content.cloneNode(true).firstElementChild)
@@ -162,7 +161,11 @@ export class PlatinumElement extends HTMLElement {
     }
   }
   attributeChangedCallback(attr, prev, value) {
-    this.state[attr] = [value, prev]
+    try {
+      this.state[attr] = [JSON.parse(value), JSON.parse(prev)]
+    } catch (e) {
+      this.state[attr] = [value, prev]
+    }
   }
   $inject(key, value) {
     ;[...this.querySelectorAll([`[slot="${key}"]`])].forEach(node => {

@@ -104,7 +104,7 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
               </platinum-if>
               <platinum-if condition="topcommentid">
                 <template>
-                  <div property="comment" typeof="Comment">
+                  <div>
                     <button data-attr-firsttoggled="aria-pressed" onclick="this.getRootNode().host.toggleFirst(event)">
                       <platinum-if condition="firsttoggled">
                         <template>

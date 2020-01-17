@@ -155,15 +155,18 @@ export class PlatinumElement extends HTMLElement {
     this.state[attr] = [value, prev]
   }
   $inject(key, value) {
-    if (!this.querySelector(`[slot="${key}"]`)) {
+    ;[...this.querySelectorAll([`[slot="${key}"]`])].forEach(node => {
+      node.remove()
+    })
+    if (value && (typeof value !== 'string' || value.length)) {
       const element = window.document.createElement('data')
       element.setAttribute('slot', key)
       this.append(element)
+      this.querySelector(`[slot="${key}"]`).innerHTML = value
     }
     ;[...this.shadowRoot.querySelectorAll([`[data-attr-${key}]`])].forEach(node => {
       node.setAttribute(node.getAttribute(`data-attr-${key}`), value)
     })
-    this.querySelector(`[slot="${key}"]`).innerHTML = value
   }
   $render() {
     const { observedAttributes } = this.constructor

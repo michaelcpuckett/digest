@@ -50,6 +50,30 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
   constructor() {
     super({
       template: `
+        <style>
+          @import 'base.css';
+          :host {
+            font-size: 1.4rem;
+          }
+          h2 {
+            font-size: 1.8rem;
+            display: inline-grid;
+          }
+          article {
+            padding: 1rem 0;
+            border-top: .2rem solid;
+            margin: 1rem 0;
+            display: grid;
+            grid-template-columns: [left] 100px [right] minmax(0, 1fr) [end];
+            grid-template-rows: [top] auto [bottom] auto [end];
+            grid-column-gap: 1.2rem;
+            grid-row-gap: .4rem;
+          }
+          button {
+            text-decoration: underline;
+            padding: .4rem 0;
+          }
+        </style>
         <platinum-if not="deleted">
           <template>
             <article
@@ -145,30 +169,6 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
             </article>
           </template>
         </platinum-if>
-        <style>
-          @import 'base.css';
-          :host {
-            font-size: 1.4rem;
-          }
-          h2 {
-            font-size: 1.8rem;
-            display: inline-grid;
-          }
-          article {
-            padding: 1rem 0;
-            border-top: .2rem solid;
-            margin: 1rem 0;
-            display: grid;
-            grid-template-columns: [left] 100px [right] minmax(0, 1fr) [end];
-            grid-template-rows: [top] auto [bottom] auto [end];
-            grid-column-gap: 1.2rem;
-            grid-row-gap: .4rem;
-          }
-          button {
-            text-decoration: underline;
-            padding: .4rem 0;
-          }
-        </style>
       `
     })
   }

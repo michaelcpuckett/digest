@@ -134,7 +134,6 @@ export class PlatinumElement extends HTMLElement {
     const $observedProps = this.constructor.$observedProps
     if ($observedProps) {
       $observedProps().forEach(key => {
-        console.log(this)
         ;[...this.shadowRoot.querySelectorAll([`[data-attr-${key}]`])].forEach(node => {
           node.setAttribute(node.getAttribute(`data-attr-${key}`), this[key])
         })

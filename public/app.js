@@ -3,20 +3,19 @@ import { PlatinumElement } from './platinum.js'
 window.customElements.define('p-app', class extends PlatinumElement {
   static get observedAttributes() {
     return [
-      'hnStories',
       'type',
-      'showhn'
+      'showhntop'
     ]
   }
   set $type([value]) {
-    this.showhn = value === 'hn'
+    this.showhntop = value === 'hntop'
   }
   constructor() {
     super({
       template: `
-        <p-if condition="showhn">
+        <p-if condition="showhntop">
           <template>
-            <x-hn-stories></x-hn-stories>
+            <x-hn-stories type="top"></x-hn-stories>
           </template>
         </p-if>
       `
@@ -27,7 +26,8 @@ window.customElements.define('p-app', class extends PlatinumElement {
 window.customElements.define('x-hn-stories', class extends PlatinumElement {
   static get observedAttributes() {
     return [
-      'stories'
+      'stories',
+      'type'
     ]
   }
   constructor() {
@@ -42,17 +42,14 @@ window.customElements.define('x-hn-stories', class extends PlatinumElement {
     })
   }
   async connectedCallback() {
-    Promise.all(
-      (
+    this.stories = JSON.stringify(await Promise.all((
         await fetch(`https://hacker-news.firebaseio.com/v0/topstories.json`)
-          .then(res => res.json())
-      )
-      .slice(0, 3) // 30
-      .map(
-        async id => await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)
           .then(res => res.json()))
-    ).then(data => {
-      this.stories = JSON.stringify(data)
-    })
+          .slice(0, 3) // 30
+          .map(async id =>
+            await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)
+              .then(res => res.json())
+          )
+    ))
   }
 })

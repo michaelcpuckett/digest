@@ -57,7 +57,9 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
     }
   }
   set $id(value) {
+    console.log('happening', value)
     window.requestAnimationFrame(() => {
+      console.log('heppened', this.state.id)
       if (value && (!this.text && !this.url && !this.title)) {
         ;(async () => {
           Object.assign(this,

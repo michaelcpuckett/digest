@@ -157,9 +157,6 @@ export class PlatinumElement extends HTMLElement {
       })
     }
   }
-  attributeChangedCallback(key, prev, value) {
-    console.log(key, prev, value)
-  }
   $inject(key, value) {
     ;[...this.querySelectorAll([`[slot="${key}"]`])].forEach(node => {
       node.remove()

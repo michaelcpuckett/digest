@@ -1,5 +1,34 @@
 import { PlatinumElement } from './platinum.js'
 
+
+
+window.customElements.define('x-hn-stories', class extends PlatinumElement {
+  static get observedAttributes() {
+    return [
+      'stories',
+      'type'
+    ]
+  }
+  constructor() {
+    super({
+      template: `
+        <p-for-each in="stories">
+          <template>
+            <x-hn-card></x-hn-card>
+          </template>
+        </p-for-each>
+      `
+    })
+  }
+  async connectedCallback() {
+    this.stories = (
+      await fetch(`https://hacker-news.firebaseio.com/v0/topstories.json`).then(res => res.json())
+    )
+    .slice(0, 3) // 30
+    .map(id => ({ id }))
+  }
+})
+
 window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement {
   static get observedAttributes() {
     return [
@@ -17,19 +46,19 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
       'text'
     ]
   }
-  set $title([value]) {
+  set $title(value) {
     this.arialabelid = value ? `hn-card-${value.toLowerCase().replace(/ /g, '-')}` : null
   }
-  set $kids([value]) {
+  set $kids(value) {
     if (Array.isArray(value) && value.length) {
       this.topcommentid = value[0]
       const [ _, ...comments ] = value.slice(0, 7)
       this.allcomments = comments.map(id => ({ id }))
     }
   }
-  set $id([value, prev]) {
+  set $id(value) {
     window.requestAnimationFrame(() => {
-      if (value && !prev && (!this.text && !this.url && !this.title)) {
+      if (value && (!this.text && !this.url && !this.title)) {
         ;(async () => {
           Object.assign(this,
             (

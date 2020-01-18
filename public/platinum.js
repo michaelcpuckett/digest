@@ -106,8 +106,7 @@ window.customElements.define('p-for-each', class PlatinumForEach extends HTMLEle
             each.map(data => Object.assign(content.cloneNode(true).firstElementChild, data)).forEach(node => this.shadowRoot.append(node))
           }
         }
-        $store.addEventListener(`$change_${this.in}`, () => {
-          const each = $store[this.in]
+        $store.addEventListener(`$change_${this.in}`, ({ detail: each }) => {
           if (Array.isArray(each) && each.length) {
             ;[...this.shadowRoot.children].forEach(node => node.remove())
             each.map(data => Object.assign(content.cloneNode(true).firstElementChild, data)).forEach(node => this.shadowRoot.append(node))
@@ -130,13 +129,14 @@ export class PlatinumElement extends HTMLElement {
 
     this.state = new Proxy({}, {
       get: (_, key) => {
-        return (_[key] || [])[0]
+        return _[key]
       },
       set: (_, key, value) => {
+        console.log('setProxy', key, value)
         _[key] = value
         this[`$${key}`] = value
-        this.$inject(key, value[0])
-        this.dispatchEvent(new CustomEvent(`$change_${key}`, { detail: value[0] }))
+        this.$inject(key, value)
+        this.dispatchEvent(new CustomEvent(`$change_${key}`, { detail: value }))
         return true
       }
     })
@@ -144,28 +144,21 @@ export class PlatinumElement extends HTMLElement {
     const { observedAttributes } = this.constructor
     if (observedAttributes) {
       observedAttributes.forEach(key => {
-        this.state[key] = [this[key]]
+        this.state[key] = this[key] || this.getAttribute(key) // getters / attrs
         Object.defineProperty(this, key, {
           get() {
             return this.state[key]
           },
           set(value) {
-            if (typeof value !== 'undefined' && value !== null) {
-              this.setAttribute(key, value)
-            } else {
-              this.removeAttribute(value)
-            }
+            console.log('set', key, value)
+            this.state[key] = value
           }
         })
       })
     }
   }
-  attributeChangedCallback(attr, prev, value) {
-    try {
-      this.state[attr] = [JSON.parse(value), JSON.parse(prev)]
-    } catch (e) {
-      this.state[attr] = [value, prev]
-    }
+  attributeChangedCallback(key, prev, value) {
+    console.log(key, prev, value)
   }
   $inject(key, value) {
     ;[...this.querySelectorAll([`[slot="${key}"]`])].forEach(node => {

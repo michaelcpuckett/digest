@@ -150,7 +150,6 @@ export class PlatinumElement extends HTMLElement {
             return this.state[key]
           },
           set(value) {
-            console.log('set', key, value)
             this.state[key] = value
           }
         })

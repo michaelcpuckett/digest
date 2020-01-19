@@ -22,10 +22,18 @@ window.customElements.define('x-hn-stories', class extends PlatinumElement {
   }
   async connectedCallback() {
     this.stories = (
-      await fetch(`https://hacker-news.firebaseio.com/v0/topstories.json`).then(res => res.json())
+      await fetch('https://hacker-news.firebaseio.com/v0/topstories.json').then(res => res.json())
     )
     .slice(0, 10) // 30
     .map(id => ({ id }))
+
+    window.navigator.serviceWorker.addEventListener('message', event => {
+      if (event.url === 'https://hacker-news.firebaseio.com/v0/topstories.json') {
+        this.stories = event.data.result
+          .slice(0, 10) // 30
+          .map(id => ({ id }))
+      }
+    })
   }
 })
 
@@ -53,9 +61,12 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
   set $kids(value) {
     if (Array.isArray(value) && value.length) {
       this.topcommentid = value[0]
-      const [ _, ...comments ] = value.slice(0, 7)
+      const [ _, ...comments ] = value.slice(0, 10)
       this.allcomments = comments.map(id => ({ id }))
       this.morecomments = !!this.allcomments.length
+      setTimeout(() => {
+        value.slice(0, 5).map(id => fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`))
+      }, 0)
     }
   }
   set $id(value) {

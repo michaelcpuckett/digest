@@ -132,7 +132,6 @@ export class PlatinumElement extends HTMLElement {
         return _[key]
       },
       set: (_, key, value) => {
-        console.log('setProxy', key, value)
         _[key] = value
         this[`$${key}`] = value
         this.$inject(key, value)
@@ -158,9 +157,10 @@ export class PlatinumElement extends HTMLElement {
     }
   }
   attributeChangedCallback(key, prev, value) {
-    console.log(key, prev, value)
+    //console.log(key, prev, value)
     window.requestAnimationFrame(() => {
-      this[key], this.state[key]
+      // TODO
+      this[key] = value//, this.state[key      ]
     })
   }
   $inject(key, value) {

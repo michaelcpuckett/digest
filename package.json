@@ -1,0 +1,6 @@
+{
+  "name": "digest",
+  "dependencies": {
+    "node-http-server": "latest"
+  }
+}

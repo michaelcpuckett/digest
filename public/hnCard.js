@@ -24,7 +24,7 @@ window.customElements.define('x-hn-stories', class extends PlatinumElement {
     this.stories = (
       await fetch(`https://hacker-news.firebaseio.com/v0/topstories.json`).then(res => res.json())
     )
-    .slice(0, 3) // 30
+    .slice(0, 10) // 30
     .map(id => ({ id }))
   }
 })
@@ -42,6 +42,7 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
       'alltoggled',
       'kids',
       'topcommentid',
+      'morecomments',
       'deleted',
       'text'
     ]
@@ -54,12 +55,11 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
       this.topcommentid = value[0]
       const [ _, ...comments ] = value.slice(0, 7)
       this.allcomments = comments.map(id => ({ id }))
+      this.morecomments = !!this.allcomments.length
     }
   }
   set $id(value) {
-    console.log('happening', value)
     window.requestAnimationFrame(() => {
-      console.log('heppened', this.state.id)
       if (value && (!this.text && !this.url && !this.title)) {
         ;(async () => {
           Object.assign(this,
@@ -73,10 +73,10 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
     })
   }
   toggleFirst() {
-    this.firsttoggled = !(this.firsttoggled && this.firsttoggled !== 'false')
+    this.firsttoggled = !this.firsttoggled
   }
   toggleAll() {
-    this.alltoggled = !(this.alltoggled && this.alltoggled !== 'false')
+    this.alltoggled = !this.alltoggled
   }
   constructor() {
     super({
@@ -89,6 +89,7 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
           h2 {
             font-size: 1.8rem;
             display: inline-grid;
+            background: purple;
           }
           article {
             padding: 1rem 0;
@@ -177,21 +178,25 @@ window.customElements.define('x-hn-card', class XHNCard extends PlatinumElement 
                       <template>
                         <div>
                           <x-hn-card data-attr-topcommentid="id"></x-hn-card>
-                          <div>
-                            <button data-attr-alltoggled="aria-pressed" onclick="this.getRootNode().host.toggleAll(event)">
-                              Toggle All
-                            </button>
-                            <p-if condition="alltoggled">
-                              <template>
-                                <p-for-each in="allcomments">
+                          <p-if condition="morecomments">
+                            <template>
+                              <div>
+                                <button data-attr-alltoggled="aria-pressed" onclick="this.getRootNode().host.toggleAll(event)">
+                                  Toggle All
+                                </button>
+                                <p-if condition="alltoggled">
                                   <template>
-                                    <x-hn-card></x-hn-card>
+                                    <p-for-each in="allcomments">
+                                      <template>
+                                        <x-hn-card></x-hn-card>
+                                      </template>
+                                    </p-for-each>
                                   </template>
-                                </p-for-each>
-                              </template>
-                            </p-if>
-                          </div>
-                        </div>
+                                </p-if>
+                              </div>
+                            <template>
+                          </p-if>
+                        </div> 
                       </template>
                     </p-if>
                   </div>

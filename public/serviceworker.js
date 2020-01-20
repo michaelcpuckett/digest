@@ -8,31 +8,37 @@ const urlsToCache = [
   '/components/card/hn/index.js',
   '/components/card/hn/template.html',
   '/components/list/hn/index.js',
-  '/components/list/hn/template.html'
+  '/components/list/hn/template.html',
+  '/components/embed/index.js',
+  '/components/embed/template.html'
 ]
 
-self.addEventListener('install', async () => {
+self.addEventListener('install', async event => {
   console.log('install')
-  const cache = await caches.open(CACHE_NAME)
-  await cache.addAll(urlsToCache)
-  await cache.put('/', (await cache.match('/app.html')))
-  await Promise.all(urlsToCache.filter(url => url.startsWith('/components/') && url.endsWith('/index.js')).map(async url => {
-    const templateUrl = url.replace('index.js', 'template.html')
-    const templateResponse = await cache.match(templateUrl)
-    const templateBody = await templateResponse.text()
-    const response = await cache.match(url)
-    const body = (await response.text()).replace(`import('./template.html')`, `
-      \`
-        ${templateBody}
-      \`
-    `)
-    await cache.put(url, new Response(body, { headers: { 'Content-Type': 'text/javascript' } }))
-    console.log(`UPDATED: ${url}`)
-  }))
+  event.waitUntil(async function() {
+    const cache = await caches.open(CACHE_NAME)
+    await cache.addAll(urlsToCache)
+    await cache.put('/', (await cache.match('/app.html')))
+    await Promise.all(urlsToCache.filter(url => url.startsWith('/components/') && url.endsWith('/index.js')).map(async url => {
+      const templateUrl = url.replace('index.js', 'template.html')
+      const templateResponse = await cache.match(templateUrl)
+      const templateBody = await templateResponse.text()
+      const response = await cache.match(url)
+      const body = (await response.text()).replace(`import('./template.html')`, `
+        \`
+          ${templateBody}
+        \`
+      `)
+      await cache.put(url, new Response(body, { headers: { 'Content-Type': 'text/javascript' } }))
+    }))
+  }())
 })
 
-self.addEventListener('activate', () => {
-  console.log('activate from sw')
+self.addEventListener('message', async ({ data }) => {
+  if (data.type === 'UPDATE_SCROLL_POSITION') {
+    const cache = await caches.open(CACHE_NAME)
+    cache.put('/ui/scrollPosition', new Response(JSON.stringify({ x: data.x, y: data.y }), { headers: { 'Content-Type': 'text/javascript' } }))
+  }
 })
 
 updateCache = (request, clientId) => {
@@ -41,13 +47,15 @@ updateCache = (request, clientId) => {
       caches.open(CACHE_NAME).then(cache => {
         cache.put(request, response.clone())
         clients.get(clientId).then(async client => {
-          await (response.clone().json()).then(async result => {
-            client.postMessage({
-              type: 'UPDATE_CACHE',
-              url: request.url,
-              result
+          if (client) {
+            await (response.clone().json()).then(async result => {
+              client.postMessage({
+                type: 'UPDATE_CACHE',
+                url: request.url,
+                result
+              })
             })
-          })
+          }
         })
       })
     })
@@ -70,17 +78,14 @@ self.addEventListener('fetch', event => {
       }
     }
   })()
-  console.log(url)
   event.respondWith(
     caches.match(url)
       .then(response => {
         if (response) {
-          if (response.type !== 'basic') {
-            // setTimeout(() => {
-            //   updateCache(url, event.clientId)
-            // }, 0)
+          if (response.headers.get('Content-Type').startsWith('application/json')) {
+            updateCache(url, event.clientId)
           }
-          return response.clone()
+          return response
         }
         return fetch(url)
           .then(response => {

@@ -1,6 +1,6 @@
 import { PlatinumElement } from './platinum.js'
 
-window.customElements.define('p-app', class extends PlatinumElement {
+export default class XApp extends PlatinumElement {
   static get observedAttributes() {
     return [
       'type',
@@ -15,10 +15,10 @@ window.customElements.define('p-app', class extends PlatinumElement {
       template: `
         <p-if condition="showhntop">
           <template>
-            <x-hn-stories type="top"></x-hn-stories>
+            <x-hn-list type="top"></x-hn-stories>
           </template>
         </p-if>
       `
     })
   }
-})
+}

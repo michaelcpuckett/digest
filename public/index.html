@@ -1,31 +1,18 @@
 <!doctype html>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<style>
-  * {
-    font: inherit;
-    color: inherit;
-  }
-  :root {
-    font-size: 10px;
-  }
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    body {
-      background-color: black;
-      color: white;
-    }
-  }
-</style>
-<script type="module">
-  window.navigator.serviceWorker.register('./serviceworker.js')
-  import './platinum.js'
-  import './hnCard.js'
-  import './app.js'
-</script>
-<p-app type="hntop"></p-app>
+<body style="background: black">
+  <script type="module">
+    window.navigator.serviceWorker.register('./serviceworker.js').then(registration => {
+      if (registration.installing) {
+        registration.installing.addEventListener('statechange', event => {
+          if (event.target.state === 'activated') {
+            window.location.reload()
+          }
+        })
+      } else if (registration.active) {
+        window.location.reload()
+      } else {
+        window.document.write('Something went wrong!')
+      }
+    })
+  </script>
+</body>

@@ -122,6 +122,7 @@ export class PlatinumElement extends HTMLElement {
     template
   }) {
     super()
+    this.template = template
     this.attachShadow({ mode: 'open' })
     const templateEl = window.document.createElement('template')
     templateEl.innerHTML = template

@@ -1,18 +1,38 @@
 const CACHE_NAME = 'platinum-v1'
 
 const urlsToCache = [
-  '/',
   '/base.css',
   '/app.js',
+  '/app.html',
   '/platinum.js',
-  '/hnCard.js'
+  '/components/card/hn/index.js',
+  '/components/card/hn/template.html',
+  '/components/list/hn/index.js',
+  '/components/list/hn/template.html'
 ]
 
-self.addEventListener('install', event => {
-  event.waitUntil(() => {
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-  })
+self.addEventListener('install', async () => {
+  console.log('install')
+  const cache = await caches.open(CACHE_NAME)
+  await cache.addAll(urlsToCache)
+  await cache.put('/', (await cache.match('/app.html')))
+  await Promise.all(urlsToCache.filter(url => url.startsWith('/components/') && url.endsWith('/index.js')).map(async url => {
+    const templateUrl = url.replace('index.js', 'template.html')
+    const templateResponse = await cache.match(templateUrl)
+    const templateBody = await templateResponse.text()
+    const response = await cache.match(url)
+    const body = (await response.text()).replace(`import('./template.html')`, `
+      \`
+        ${templateBody}
+      \`
+    `)
+    await cache.put(url, new Response(body, { headers: { 'Content-Type': 'text/javascript' } }))
+    console.log(`UPDATED: ${url}`)
+  }))
+})
+
+self.addEventListener('activate', () => {
+  console.log('activate from sw')
 })
 
 updateCache = (request, clientId) => {
@@ -34,25 +54,40 @@ updateCache = (request, clientId) => {
 }
 
 self.addEventListener('fetch', event => {
+  let {
+    request: { url: target }
+  } = event
+  const url = (() => {
+    switch(true) {
+      case (target.startsWith('http://hn/stories/')): {
+        return `${target.replace('http://hn/stories/', 'https://hacker-news.firebaseio.com/v0/')}.json`
+      }
+      case (target.startsWith('http://hn/story/')): {
+        return `${target.replace('http://hn/story/', 'https://hacker-news.firebaseio.com/v0/item/')}.json`
+      }
+      default: {
+        return target
+      }
+    }
+  })()
+  console.log(url)
   event.respondWith(
-    event.request.url.includes('?cache=false') ?
-      fetch(event.request) :
-      caches.match(event.request)
-        .then(response => {
-          if (response) {
-            if (response.type !== 'basic') {
-              setTimeout(() => {
-                updateCache(event.request, event.clientId)
-              }, 0)
-            }
-            return response.clone()
+    caches.match(url)
+      .then(response => {
+        if (response) {
+          if (response.type !== 'basic') {
+            // setTimeout(() => {
+            //   updateCache(url, event.clientId)
+            // }, 0)
           }
-          return fetch(event.request)
-            .then(response => {
-              caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()))
-              return response.clone()
-            })
+          return response.clone()
         }
-      )
-  );
-});
+        return fetch(url)
+          .then(response => {
+            caches.open(CACHE_NAME).then(cache => cache.put(url, response.clone()))
+            return response.clone()
+          })
+      }
+    )
+  )
+})

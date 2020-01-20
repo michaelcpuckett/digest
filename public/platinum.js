@@ -1,6 +1,12 @@
 window.customElements.define('p-if', class PlatinumForEach extends HTMLElement {
   constructor() {
     super()
+    this.style.display = 'contents'
+    this.template = this.querySelector('template')
+    this.fragment = new DocumentFragment()
+    this.element = this.template.content.cloneNode(true).firstElementChild
+    this.fragment.append(this.element)
+    this.boundToggle = this.toggle.bind(this)
   }
   get condition() {
     return this.getAttribute('condition')
@@ -8,50 +14,31 @@ window.customElements.define('p-if', class PlatinumForEach extends HTMLElement {
   get not() {
     return this.getAttribute('not')
   }
-  toggle(show) {
-    show = show && show !== 'false'
-    if (!this.element) {
-      this.element = (this.template.content.cloneNode(true).firstElementChild)
+  toggle() {
+    const showing = this.element.parentNode !== this.fragment
+    const show = this.currentHost && (this.condition ? this.currentHost[this.condition] : !this.currentHost[this.not])
+    if (show && !showing) {
+      this.appendChild(this.element)
+      this.getRootNode().host.$render() // TODO mutationobserver
     }
-    if (this.condition) {
-      if (show) {
-        this.appendChild(this.element)
-        this.getRootNode().host.$render() // TODO mutationobserver
-      } else {
-        this.fragment.append(this.element)
-      }
-    }
-    if (this.not) {
-      if (!show) {
-        this.appendChild(this.element)
-        this.getRootNode().host.$render() // TODO mutationobserver
-      } else {
-        this.fragment.append(this.element)
-      }
+    if (!show && showing) {
+      this.fragment.append(this.element)
     }
   }
   connectedCallback() {
-    this.style.display = 'contents'
-    this.template = this.querySelector('template')
-    this.fragment = new DocumentFragment()
     window.requestAnimationFrame(() => {
-      if (this.condition || this.not) {
-        const { host } = this.getRootNode()
-        if (this.condition) {
-          if (host[this.condition]) {
-            this.toggle(host[this.condition])
-          }
-        }
-        if (this.not) {
-          if (!host[this.condition]) {
-            this.toggle(host[this.condition])
-          }
-        }
-        host.addEventListener(`$change_${this.condition || this.not}`, ({ detail: value }) => {
-          this.toggle(value)
-        })
+      const { host } = this.getRootNode()
+      if (host) {
+        this.currentHost = host
+        this.toggle()
+        host.addEventListener(`$change_${this.condition || this.not}`, this.boundToggle)
       }
     })
+  }
+  disconnectedCallback() {
+    if (this.currentHost && this.currentHost.removeElementListener) {
+      this.currentHost.removeElementListener(`$change_${this.condition || this.not}`, this.boundToggle)
+    }
   }
 })
 

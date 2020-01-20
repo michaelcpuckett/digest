@@ -76,6 +76,7 @@ window.customElements.define('p-for-each', class PlatinumForEach extends HTMLEle
         {
           const each = $store[this.in]
           if (Array.isArray(each) && each.length) {
+            ;[...this.shadowRoot.children].forEach(node => node.remove())
             each.map(data => Object.assign(content.cloneNode(true).firstElementChild, data)).forEach(node => this.shadowRoot.append(node))
           }
         }

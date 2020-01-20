@@ -17,15 +17,16 @@ export default class XHNList extends PlatinumElement {
     this.stories = (
       await fetch(url).then(res => res.json())
     )
-    .slice(0, 10) // 30
+    .slice(0, 10)
     .map(id => ({ id }))
-
+    await window.navigator.serviceWorker.ready
     window.navigator.serviceWorker.addEventListener('message', event => {
-      if (event.url === url) {
+      if (event.data.type === 'UPDATE_CACHE' && event.data.url === url) {
         this.stories = event.data.result
-          .slice(0, 10) // 30
+          .slice(0, 30)
           .map(id => ({ id }))
       }
     })
+    fetch(url)
   }
 }

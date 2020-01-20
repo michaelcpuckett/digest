@@ -41,17 +41,28 @@ self.addEventListener('message', async ({ data }) => {
   }
 })
 
-updateCache = (request, clientId) => {
-  fetch(request)
+const broadcast = async message => {
+  const clients = await clients.matchAll()
+  clients.forEach(client => {
+    client.postMessage(message)
+  })
+}
+
+const emit = async (client, message) => {
+  client.postMessage(message)
+}
+
+updateCache = (url, target, clientId) => {
+  fetch(url)
     .then(response => {
       caches.open(CACHE_NAME).then(cache => {
-        cache.put(request, response.clone())
+        cache.put(url, response.clone())
         clients.get(clientId).then(async client => {
           if (client) {
             await (response.clone().json()).then(async result => {
-              client.postMessage({
+              emit(client, {
                 type: 'UPDATE_CACHE',
-                url: request.url,
+                url: target,
                 result
               })
             })
@@ -83,7 +94,7 @@ self.addEventListener('fetch', event => {
       .then(response => {
         if (response) {
           if (response.headers.get('Content-Type').startsWith('application/json')) {
-            updateCache(url, event.clientId)
+            updateCache(url, target, event.clientId)
           }
           return response
         }

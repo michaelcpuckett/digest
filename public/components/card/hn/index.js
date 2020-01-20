@@ -33,16 +33,19 @@ export default class XHNCard extends PlatinumElement {
     }
   }
   set $id(value) {
-    window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(async () => {
       if (value && (!this.text && !this.url && !this.title)) {
-        ;(async () => {
-          Object.assign(this,
-            (
-              await fetch(`http://hn/story/${value}`)
-              .then(res => res.json())
-            )
-          )
-        })()
+        Object.assign(this, (await fetch(`http://hn/story/${value}`).then(res => res.json())))
+      }
+    })
+  }
+  set $topcommentid(value) {
+    window.requestAnimationFrame(async () => {
+      if (value) {
+        const { kids } = await (await fetch(`http://hn/story/${value}`)).json()
+        if (kids) {
+          kids.forEach(id => fetch(`http://hn/story/${id}`))
+        }
       }
     })
   }

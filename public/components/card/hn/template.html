@@ -75,7 +75,7 @@
       <p-if condition="topcommentid">
         <template>
           <div>
-            <button data-attr-firsttoggled="aria-pressed" onclick="this.getRootNode().host.toggleFirst(event)">
+            <button data-attr-firsttoggled="aria-expanded" data-attr-commentarialabelid="aria-controls" onclick="this.getRootNode().host.toggleFirst(event)">
               <p-if condition="firsttoggled">
                 <template>
                   <span>
@@ -94,7 +94,7 @@
             </button>
             <p-if condition="firsttoggled">
               <template>
-                <div>
+                <div data-attr-commentarialabelid="id">
                   <x-hn-card data-attr-topcommentid="id"></x-hn-card>
                   <p-if condition="morecomments">
                     <template>

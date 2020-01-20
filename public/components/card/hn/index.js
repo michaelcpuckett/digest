@@ -13,13 +13,11 @@ export default class XHNCard extends PlatinumElement {
       'alltoggled',
       'kids',
       'topcommentid',
+      'commentarialabelid',
       'morecomments',
       'deleted',
       'text'
     ]
-  }
-  set $title(value) {
-    this.arialabelid = value ? `hn-card-${value.toLowerCase().replace(/ /g, '-')}` : null
   }
   set $kids(value) {
     if (Array.isArray(value) && value.length) {
@@ -33,6 +31,8 @@ export default class XHNCard extends PlatinumElement {
     }
   }
   set $id(value) {
+    this.arialabelid = value ? `hn-card-${value}` : null
+    this.commentarialabelid = value ? `hn-comments-${value}` : null
     window.requestAnimationFrame(async () => {
       if (value && (!this.text && !this.url && !this.title)) {
         Object.assign(this, (await fetch(`http://hn/story/${value}`).then(res => res.json())))
@@ -59,5 +59,7 @@ export default class XHNCard extends PlatinumElement {
     super({
       template: import('./template.html')
     })
+    this.firsttoggled = false
+    this.alltoggled = false
   }
 }

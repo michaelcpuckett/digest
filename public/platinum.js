@@ -82,6 +82,7 @@ window.customElements.define('p-for-each', class PlatinumForEach extends HTMLEle
         $store.addEventListener(`$change_${this.in}`, ({ detail: each }) => {
           if (Array.isArray(each) && each.length) {
             ;[...this.shadowRoot.children].forEach(node => node.remove())
+            console.log(each)
             each.map(data => Object.assign(content.cloneNode(true).firstElementChild, data)).forEach(node => this.shadowRoot.append(node))
           }
         })

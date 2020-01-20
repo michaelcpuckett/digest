@@ -1,30 +1,3 @@
-export class PlatinumStore extends HTMLElement {
-  constructor(initialState) {
-    super()
-    this.state = new Proxy(initialState, {
-      set: (_this, key, value) => {
-        _this[key] = value
-        this.dispatchEvent(new CustomEvent(`$change_${key}`, { detail: value }))
-        return true
-      }
-    })
-    Object.keys(initialState).forEach(key => {
-      Object.defineProperty(this, key, {
-        get: () => {
-          return this.state[key]
-        },
-        set: (value) => {
-          this.state[key] = value
-        }
-      })
-    })
-  }
-}
-
-
-
-
-
 window.customElements.define('p-if', class PlatinumForEach extends HTMLElement {
   constructor() {
     super()

@@ -1,0 +1,14 @@
+<p-if condition="showinghn">
+  <p-for-each in="stories">
+    <template>
+      <x-hn-card></x-hn-card>
+    </template>
+  </p-for-each>
+</p-if>
+<p-if condition="showingdev">
+  <p-for-each in="stories">
+    <template>
+      <x-dev-card></x-dev-card>
+    </template>
+  </p-for-each>
+</p-if>

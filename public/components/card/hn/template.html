@@ -9,12 +9,13 @@
     /* background: purple; */
   }
   article {
-    padding: 1rem 0;
+    padding: 1rem;
     border-top: .2rem solid;
-    margin: 1rem 0;
+    border-left: .2rem solid;
+    margin: 1rem 0 1rem 2rem;
     display: grid;
-    grid-template-columns: [left] 100px [right] minmax(0, 1fr) [end];
-    grid-template-rows: [top] auto [bottom] auto [end];
+    /* grid-template-columns: [left] 100px [right] minmax(0, 1fr) [end];
+    grid-template-rows: [top] auto [bottom] auto [end]; */
     grid-column-gap: 1.2rem;
     grid-row-gap: .4rem;
   }
@@ -48,6 +49,9 @@
           </div>
         </template>
       </p-if>
+      <a data-attr-permalink="href">
+        Permalink
+      </a>
       <p-if condition="score">
         <template>
           <div
@@ -95,6 +99,7 @@
             <p-if condition="firsttoggled">
               <template>
                 <div data-attr-commentarialabelid="id">
+                  <div style="margin-left:2.6rem">Top Comment</div>
                   <x-hn-card data-attr-topcommentid="id"></x-hn-card>
                   <p-if condition="morecomments">
                     <template>

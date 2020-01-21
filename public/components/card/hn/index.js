@@ -11,6 +11,7 @@ export default class XHNCard extends PlatinumElement {
       'score',
       'firsttoggled',
       'alltoggled',
+      'permalink',
       'kids',
       'topcommentid',
       'commentarialabelid',
@@ -31,6 +32,7 @@ export default class XHNCard extends PlatinumElement {
     }
   }
   set $id(value) {
+    this.permalink = `https://news.ycombinator.com/item?id=${value}`
     this.arialabelid = value ? `hn-card-${value}` : null
     this.commentarialabelid = value ? `hn-comments-${value}` : null
     window.requestAnimationFrame(async () => {

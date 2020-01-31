@@ -4,20 +4,26 @@
     font-size: 1.4rem;
   }
   h2 {
-    font-size: 1.8rem;
+    font-size: 2rem;
     /* display: inline-grid; */
     /* background: purple; */
+  }
+  [property="sharedContent"] a {
+    text-decoration: none;
   }
   article {
     padding: 1rem;
     border-top: .2rem solid;
     border-left: .2rem solid;
-    margin: 1rem 0 1rem 2rem;
+    margin: 1rem 0 3rem 2rem;
     display: grid;
+    /* grid-template-columns: 100%; */
+    /* overflow: auto; */
     /* grid-template-columns: [left] 100px [right] minmax(0, 1fr) [end];
     grid-template-rows: [top] auto [bottom] auto [end]; */
     grid-column-gap: 1.2rem;
     grid-row-gap: .4rem;
+    width: calc(100vw - 8rem);
   }
   button {
     text-decoration: underline;
@@ -30,9 +36,40 @@
     <article
       data-attr-arialabelid="aria-labelledby"
       typeof="SocialMediaPosting">
-      <div property="author">
-        <span class="visually-hidden">By</span>
-        <slot name="by"></slot>
+      <div>
+        <p-if condition="by">
+          <template>
+            <span property="author">
+              <span class="visually-hidden">By</span>
+              <slot name="by"></slot>
+            </span>
+          </template>
+        </p-if>
+        <p-if condition="score">
+          <template>
+            <span
+              property="interactionStatistic"
+              typeof="InteractionCounter">
+              /
+              <span property="userInteractionCount">
+                <slot name="score"></slot>
+              </span>
+              <span property="interactionType" value="LikeAction">
+                points
+              </span>
+            </span>
+          </template>
+        </p-if>
+        <p-if condition="permalink">
+          <template>
+            <span>
+              /
+              <a data-attr-permalink="href">
+                Permalink
+              </a>
+            </span>
+          </template>
+        </p-if>
       </div>
       <p-if condition="url">
         <template>
@@ -46,26 +83,6 @@
                 <slot name="title"></slot>
               </h2>
             </a>
-          </div>
-        </template>
-      </p-if>
-      <a data-attr-permalink="href">
-        Permalink
-      </a>
-      <p-if condition="score">
-        <template>
-          <div
-            property="interactionStatistic"
-            typeof="InteractionCounter">
-            <span property="userInteractionCount">
-              <slot name="score"></slot>
-            </span>
-            <span property="interactionType" value="LikeAction">
-              points
-            </span>
-            <span class="visually-hidden">
-              (Show comments)
-            </span>
           </div>
         </template>
       </p-if>
@@ -99,7 +116,6 @@
             <p-if condition="firsttoggled">
               <template>
                 <div data-attr-commentarialabelid="id">
-                  <div style="margin-left:2.6rem">Top Comment</div>
                   <x-hn-card data-attr-topcommentid="id"></x-hn-card>
                   <p-if condition="morecomments">
                     <template>

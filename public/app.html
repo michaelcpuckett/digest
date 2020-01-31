@@ -1,7 +1,12 @@
 <!doctype html>
+<title>HN</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Kanit:300,800|Lato&display=swap">
+<link rel="manifest" href="/manifest.json" />
+<link rel="apple-touch-icon" href="/icon-512x512.png" />
 <script type="module">
   (async () => {
     const components = {
@@ -21,18 +26,21 @@
     color: inherit;
   }
   :root {
-    font-size: 10px;
+    font-size: 12px;
   }
   body {
     margin: 0;
     padding: 0;
-    font-family: sans-serif;
+    font-family: 'Kanit', sans-serif;
+    font-weight: 300;
+    position: relative;
+    line-height: 1.5;
   }
-  /* @media (prefers-color-scheme: dark) {
+  @media (prefers-color-scheme: dark) {
     body {
       background-color: black;
       color: white;
     }
-  } */
+  }
 </style>
 <x-app type="hntop"></x-app>

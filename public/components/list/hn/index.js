@@ -13,7 +13,7 @@ export default class XHNList extends PlatinumElement {
     })
   }
   async connectedCallback() {
-    const url = 'http://hn/stories/topstories'
+    const url = 'https://hn/stories/topstories'
     this.stories = (
       await fetch(url).then(res => res.json())
     )

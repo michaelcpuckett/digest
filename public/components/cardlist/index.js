@@ -21,7 +21,7 @@ export default class XCardList extends PlatinumElement {
   }
   set $showinghn(bool) {
     if (bool) {
-      this.url = `http://hn/stories/top`
+      this.url = `https://hn/stories/top`
     }
   }
   set $showingdev(bool) {

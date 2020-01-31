@@ -1,0 +1,14 @@
+{
+  "name": "Hacker News PWA",
+  "short_name": "HN",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [{
+    "src": "/icon-512x512.png",
+    "type" : "image/png",
+    "sizes": "512x512"
+  }]
+}

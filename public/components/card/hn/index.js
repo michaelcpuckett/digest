@@ -27,7 +27,7 @@ export default class XHNCard extends PlatinumElement {
       this.allcomments = comments.map(id => ({ id }))
       this.morecomments = !!this.allcomments.length
       setTimeout(() => {
-        value.slice(0, 5).map(id => fetch(`http://hn/story/${id}`))
+        value.slice(0, 5).map(id => fetch(`https://hn/story/${id}`))
       }, 0)
     }
   }
@@ -37,16 +37,16 @@ export default class XHNCard extends PlatinumElement {
     this.commentarialabelid = value ? `hn-comments-${value}` : null
     window.requestAnimationFrame(async () => {
       if (value && (!this.text && !this.url && !this.title)) {
-        Object.assign(this, (await fetch(`http://hn/story/${value}`).then(res => res.json())))
+        Object.assign(this, (await fetch(`https://hn/story/${value}`).then(res => res.json())))
       }
     })
   }
   set $topcommentid(value) {
     window.requestAnimationFrame(async () => {
       if (value) {
-        const { kids } = await (await fetch(`http://hn/story/${value}`)).json()
+        const { kids } = await (await fetch(`https://hn/story/${value}`)).json()
         if (kids) {
-          kids.forEach(id => fetch(`http://hn/story/${id}`))
+          kids.forEach(id => fetch(`https://hn/story/${id}`))
         }
       }
     })

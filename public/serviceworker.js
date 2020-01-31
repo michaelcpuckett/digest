@@ -10,7 +10,8 @@ const urlsToCache = [
   '/components/list/hn/index.js',
   '/components/list/hn/template.html',
   '/components/embed/index.js',
-  '/components/embed/template.html'
+  '/components/embed/template.html',
+  'https://fonts.googleapis.com/css?family=Kanit:300,800|Lato&display=swap'
 ]
 
 self.addEventListener('install', async event => {
@@ -78,11 +79,11 @@ self.addEventListener('fetch', event => {
   } = event
   const url = (() => {
     switch(true) {
-      case (target.startsWith('http://hn/stories/')): {
-        return `${target.replace('http://hn/stories/', 'https://hacker-news.firebaseio.com/v0/')}.json`
+      case (target.startsWith('https://hn/stories/')): {
+        return `${target.replace('https://hn/stories/', 'https://hacker-news.firebaseio.com/v0/')}.json`
       }
-      case (target.startsWith('http://hn/story/')): {
-        return `${target.replace('http://hn/story/', 'https://hacker-news.firebaseio.com/v0/item/')}.json`
+      case (target.startsWith('https://hn/story/')): {
+        return `${target.replace('https://hn/story/', 'https://hacker-news.firebaseio.com/v0/item/')}.json`
       }
       default: {
         return target

@@ -8,7 +8,8 @@
   padding: 0;
   border: 0; 
 }
-* {
+*,
+::slotted(*) {
   box-sizing: border-box;
   margin: 0;
   padding: 0;

@@ -1,4 +1,5 @@
 import { PlatinumElement } from '/platinum.js'
+import '../../../lib/long-press.js'
 
 export default class XHNCard extends PlatinumElement {
   static get observedAttributes() {
@@ -56,6 +57,13 @@ export default class XHNCard extends PlatinumElement {
   }
   toggleAll() {
     this.alltoggled = !this.alltoggled
+  }
+  share(event) {
+    if (navigator.share) {
+      navigator.share({
+        url: event.currentTarget.getAttribute('href')
+      })
+    }
   }
   constructor() {
     super({

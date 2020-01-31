@@ -26,7 +26,7 @@ export default class XApp extends PlatinumElement {
         <style>
           @import 'base.css';
           h1 {
-            padding: 1.5rem 2rem;
+            padding: 1rem;
             font-size: 2.8rem;
           }
           header {

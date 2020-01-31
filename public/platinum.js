@@ -19,7 +19,7 @@ window.customElements.define('p-if', class PlatinumForEach extends HTMLElement {
     const show = this.currentHost && (this.condition ? this.currentHost[this.condition] : !this.currentHost[this.not])
     if (show && !showing) {
       this.appendChild(this.element)
-      this.getRootNode().host.$render() // TODO mutationobserver
+      this.getRootNode().host.$render() // TODO mutationobserver?
     }
     if (!show && showing) {
       this.fragment.append(this.element)
@@ -41,10 +41,6 @@ window.customElements.define('p-if', class PlatinumForEach extends HTMLElement {
     }
   }
 })
-
-
-
-
 
 window.customElements.define('p-for-each', class PlatinumForEach extends HTMLElement {
   constructor() {
@@ -70,7 +66,6 @@ window.customElements.define('p-for-each', class PlatinumForEach extends HTMLEle
         $store.addEventListener(`$change_${this.in}`, ({ detail: each }) => {
           if (Array.isArray(each) && each.length) {
             ;[...this.shadowRoot.children].forEach(node => node.remove())
-            console.log(each)
             each.map(data => Object.assign(content.cloneNode(true).firstElementChild, data)).forEach(node => this.shadowRoot.append(node))
           }
         })
@@ -119,10 +114,8 @@ export class PlatinumElement extends HTMLElement {
     }
   }
   attributeChangedCallback(key, prev, value) {
-    //console.log(key, prev, value)
     window.requestAnimationFrame(() => {
-      // TODO
-      this[key] = value//, this.state[key      ]
+      this[key] = value
     })
   }
   $inject(key, value) {

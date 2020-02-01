@@ -1,4 +1,4 @@
-import { PlatinumElement } from '/platinum.js'
+import { PlatinumElement } from '../../../platinum/index.js'
 
 export default class XHNList extends PlatinumElement {
   static get observedAttributes() {

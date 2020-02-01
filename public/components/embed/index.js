@@ -1,4 +1,4 @@
-import { PlatinumElement } from '/platinum.js'
+import { PlatinumElement } from '../../platinum/index.js'
 
 export default class XEmbed extends PlatinumElement {
   static get observedAttributes() {

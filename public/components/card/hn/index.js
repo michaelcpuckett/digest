@@ -1,5 +1,4 @@
-import { PlatinumElement } from '/platinum.js'
-import '../../../lib/long-press.js'
+import { PlatinumElement } from '../../../platinum/index.js'
 
 export default class XHNCard extends PlatinumElement {
   static get observedAttributes() {
@@ -18,8 +17,13 @@ export default class XHNCard extends PlatinumElement {
       'commentarialabelid',
       'morecomments',
       'deleted',
-      'text'
+      'text',
+      'canShare',
+      'shareableurl'
     ]
+  }
+  get canShare() {
+    return !!window.navigator.share
   }
   set $kids(value) {
     if (Array.isArray(value) && value.length) {
@@ -34,6 +38,7 @@ export default class XHNCard extends PlatinumElement {
   }
   set $id(value) {
     this.permalink = `https://news.ycombinator.com/item?id=${value}`
+    this.shareableurl = this.permalink
     this.arialabelid = value ? `hn-card-${value}` : null
     this.commentarialabelid = value ? `hn-comments-${value}` : null
     window.requestAnimationFrame(async () => {
@@ -41,6 +46,9 @@ export default class XHNCard extends PlatinumElement {
         Object.assign(this, (await fetch(`https://hn/story/${value}`).then(res => res.json())))
       }
     })
+  }
+  set $url(value) {
+    this.shareableurl = value
   }
   set $topcommentid(value) {
     window.requestAnimationFrame(async () => {
@@ -57,13 +65,6 @@ export default class XHNCard extends PlatinumElement {
   }
   toggleAll() {
     this.alltoggled = !this.alltoggled
-  }
-  share(event) {
-    if (navigator.share) {
-      navigator.share({
-        url: event.currentTarget.getAttribute('href')
-      })
-    }
   }
   constructor() {
     super({

@@ -71,6 +71,16 @@
             </span>
           </template>
         </p-if>
+        <p-if condition="canShare">
+          <template>
+            <span>
+              /
+              <a data-attr-shareableurl="href data-share" onclick="event.preventDefault() || navigator.share({ url: event.currentTarget.dataset.share })">
+                Share
+              </a>
+            </span>
+          </template>
+        </p-if>
       </div>
       <p-if condition="url">
         <template>

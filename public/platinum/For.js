@@ -19,7 +19,7 @@ export default class PlatinumFor extends PlatinumShadow {
       each.map(data => {
         const shadowEl = window.document.createElement('p-shadow')
         const clone = [...this.fragment.children].find(node => node.key && node.key === data.key) || this.templateContent.cloneNode(true).firstElementChild
-        if (typeof data === 'Object') {
+        if (typeof data === 'object') {
           data = { ...data, _host: Object.fromEntries(this.attrs.map(attr => [ attr, this.$store[attr] ])) }
           if (clone.tagName.includes('-')) {
             Object.assign(clone, data)
@@ -69,7 +69,7 @@ export default class PlatinumFor extends PlatinumShadow {
               const shadowEl = window.document.createElement('p-shadow')
               const clone = this.templateContent.cloneNode(true).firstElementChild
 
-              if (typeof data === 'Object') {
+              if (typeof data === 'object') {
                 data = { ...data, _host: Object.fromEntries(this.attrs.map(attr => [ attr, this.$store[attr] ])) }
                 if (clone.tagName.includes('-')) {
                   Object.assign(clone, data)

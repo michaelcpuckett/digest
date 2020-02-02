@@ -3,17 +3,23 @@ import PlatinumShadow from './Shadow.js'
 export default class PlatinumFor extends PlatinumShadow {
   constructor() {
     super()
+    this.fragment = new DocumentFragment()
   }
   get each() {
     return this.getAttribute('each')
   }
   handleChange({ detail: each }) {
     if (Array.isArray(each) && each.length) {
-      ;[...this.shadowRoot.children].forEach(node => node.remove())
+      ;[...this.shadowRoot.children].forEach(node => {
+        if (node.shadowRoot.firstElementChild.key) {
+          this.fragment.append(node.shadowRoot.firstElementChild)
+        }
+        node.remove()
+      })
       each.map(data => {
         data = { ...data, _host: Object.fromEntries(this.attrs.map(attr => [ attr, this.$store[attr] ])) }
         const shadowEl = window.document.createElement('p-shadow')
-        const clone = this.templateContent.cloneNode(true).firstElementChild
+        const clone = [...this.fragment.children].find(node => node.key && node.key === data.key) || this.templateContent.cloneNode(true).firstElementChild
         if (clone.tagName.includes('-')) {
           Object.assign(clone, data)
         }
@@ -54,7 +60,6 @@ export default class PlatinumFor extends PlatinumShadow {
         {
           const each = this.$store[this.each]
           if (Array.isArray(each) && each.length) {
-            ;[...this.shadowRoot.children].forEach(node => node.remove())
             each.map(data => {
               data = { ...data, _host: Object.fromEntries(this.attrs.map(attr => [ attr, this.$store[attr] ])) }
               const shadowEl = window.document.createElement('p-shadow')

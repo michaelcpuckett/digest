@@ -25,7 +25,7 @@ export default class XHNList extends PlatinumElement {
         if (event.data.type === 'UPDATE_CACHE' && event.data.url === url) {
           this.stories = event.data.result
             .slice(0, 30)
-            .map(id => ({ id }))
+            .map(id => ({ id, key: id }))
         }
       })
       fetch(url)

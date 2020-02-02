@@ -25,30 +25,30 @@ export default class XHNCard extends PlatinumElement {
   get canShare() {
     return !!window.navigator.share
   }
-  set $kids(value) {
-    if (Array.isArray(value) && value.length) {
-      this.topcommentid = value[0]
-      const [ _, ...comments ] = value.slice(0, 10)
-      this.allcomments = comments.map(id => ({ id }))
-      this.morecomments = !!this.allcomments.length
+  set $kids(k) {
+    if (Array.isArray(k) && k.length) {
+      const [ topcommentid, ...kids ] = k.slice(0, 10)
+      this.topcommentid = topcommentid
+      this.allcomments = kids.map(id => ({ id }))
+      this.morecomments = !!kids.length
       setTimeout(() => {
-        value.slice(0, 5).map(id => fetch(`https://hn/story/${id}`))
+        kids.slice(0, 5).map(id => fetch(`https://hn/story/${id}`))
       }, 0)
     }
   }
-  set $id(value) {
-    this.permalink = `https://news.ycombinator.com/item?id=${value}`
+  set $id(id) {
+    this.permalink = `https://news.ycombinator.com/item?id=${id}`
     this.shareableurl = this.permalink
-    this.arialabelid = value ? `hn-card-${value}` : null
-    this.commentarialabelid = value ? `hn-comments-${value}` : null
+    this.arialabelid = id ? `hn-card-${id}` : null
+    this.commentarialabelid = id ? `hn-comments-${id}` : null
     window.requestAnimationFrame(async () => {
-      if (value && (!this.text && !this.url && !this.title)) {
-        Object.assign(this, (await fetch(`https://hn/story/${value}`).then(res => res.json())))
+      if (id && (!this.text && !this.url && !this.title)) {
+        Object.assign(this, (await fetch(`https://hn/story/${id}`).then(res => res.json())))
       }
     })
   }
-  set $url(value) {
-    this.shareableurl = value
+  set $url(url) {
+    this.shareableurl = url
   }
   set $topcommentid(value) {
     window.requestAnimationFrame(async () => {

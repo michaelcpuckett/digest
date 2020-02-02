@@ -5,7 +5,7 @@ const urlsToCache = [
   '/app.js',
   '/app.html',
   '/platinum/Element.js',
-  '/platinum/ForEach.js',
+  '/platinum/For.js',
   '/platinum/If.js',
   '/platinum/Shadow.js',
   '/platinum/index.js',

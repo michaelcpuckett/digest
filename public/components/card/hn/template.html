@@ -1,5 +1,5 @@
 <style>
-  @import 'base.css';
+  @import '../../../base.css';
   :host {
     font-size: 1.4rem;
     line-height: 1.3;
@@ -136,11 +136,11 @@
                         </button>
                         <p-if condition="alltoggled">
                           <template>
-                            <p-for-each in="allcomments">
+                            <p-for each="allcomments">
                               <template>
                                 <x-hn-card></x-hn-card>
                               </template>
-                            </p-for-each>
+                            </p-for>
                           </template>
                         </p-if>
                       </div>

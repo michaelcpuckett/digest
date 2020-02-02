@@ -1,17 +1,17 @@
 import PlatinumShadow from './Shadow.js'
 
-export default class PlatinumForEach extends PlatinumShadow {
+export default class PlatinumFor extends PlatinumShadow {
   constructor() {
     super()
   }
-  get in() {
-    return this.getAttribute('in')
+  get each() {
+    return this.getAttribute('each')
   }
   handleChange({ detail: each }) {
     if (Array.isArray(each) && each.length) {
       ;[...this.shadowRoot.children].forEach(node => node.remove())
       each.map(data => {
-        data = { ...data, ...Object.fromEntries(this.attrs.map(attr => [ attr, this.$store[attr] ])) }
+        data = { ...data, _host: Object.fromEntries(this.attrs.map(attr => [ attr, this.$store[attr] ])) }
         const shadowEl = window.document.createElement('p-shadow')
         const clone = this.templateContent.cloneNode(true).firstElementChild
         if (clone.tagName.includes('-')) {
@@ -50,13 +50,13 @@ export default class PlatinumForEach extends PlatinumShadow {
     window.requestAnimationFrame(() => {
       this.$store = this.getRootNode().host || this.parentElement
       this.attrs = window.customElements.get(this.$store.tagName.toLowerCase()).observedAttributes || []
-      if (this.in) {
+      if (this.each) {
         {
-          const each = this.$store[this.in]
+          const each = this.$store[this.each]
           if (Array.isArray(each) && each.length) {
             ;[...this.shadowRoot.children].forEach(node => node.remove())
             each.map(data => {
-              data = { ...data, ...Object.fromEntries(this.attrs.map(attr => [ attr, this.$store[attr] ])) }
+              data = { ...data, _host: Object.fromEntries(this.attrs.map(attr => [ attr, this.$store[attr] ])) }
               const shadowEl = window.document.createElement('p-shadow')
               const clone = this.templateContent.cloneNode(true).firstElementChild
               if (clone.tagName.includes('-')) {
@@ -90,7 +90,7 @@ export default class PlatinumForEach extends PlatinumShadow {
           }
         }
         // TODO remove event listeners
-        this.$store.addEventListener(`$change_${this.in}`, event => this.handleChange(event))
+        this.$store.addEventListener(`$change_${this.each}`, event => this.handleChange(event))
         this.attrs.forEach(attr => {
           this.$store.addEventListener(`$change_${attr}`, ({ detail: value }) => {
             ;[...this.shadowRoot.children].forEach((parent) => {

@@ -12,6 +12,8 @@
     const components = {
       'x-hn-card': (await import('./components/card/hn/index.js')).default,
       'x-hn-list': (await import('./components/list/hn/index.js')).default,
+      'x-headline-card': (await import('./components/card/headline/index.js')).default,
+      'x-headline-list': (await import('./components/list/headline/index.js')).default,
       'x-app': (await import('./app.js')).default
     }
 
@@ -40,4 +42,4 @@
     }
   }
 </style>
-<x-app type="hntop"></x-app>
+<x-app type="topheadlines"></x-app>

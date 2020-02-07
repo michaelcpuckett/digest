@@ -5,20 +5,14 @@ export default class XApp extends PlatinumElement {
     return [
       'type',
       'showhntop',
+      'showtopheadlines',
       'showtweets'
     ]
   }
   set $type(type) {
     this.showhntop = type === 'hntop'
     this.showtweets = type === 'tweets'
-  }
-  set $showtweets(value) {
-    if (value) {
-      console.log('tweeting')
-      ;(async () => {
-        console.log((await fetch('https://api.twitter.com/1.1/search/tweets.json')).json())
-      })()
-    }
+    this.showtopheadlines = type === 'topheadlines'
   }
   constructor() {
     super({
@@ -36,6 +30,11 @@ export default class XApp extends PlatinumElement {
         <header>
           <h1>Hacker News Top</h1>
         </header>
+        <p-if condition="showtopheadlines">
+          <template>
+            <x-headline-list type="top"></x-headline-list>
+          </template>
+        </p-if>
         <p-if condition="showhntop">
           <template>
             <x-hn-list type="top"></x-hn-stories>

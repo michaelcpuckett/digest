@@ -1,0 +1,79 @@
+<style>
+  @import 'base.css';
+  :host {
+    font-size: 1.4rem;
+    line-height: 1.3;
+  }
+  h2 {
+    font-size: 1.8rem;
+    /* display: inline-grid; */
+    /* background: purple; */
+  }
+  [property="sharedContent"] a {
+    text-decoration: none;
+  }
+  article {
+    padding: 1rem;
+    border-top: .1rem solid purple;
+    border-left: .1rem solid purple;
+    margin: 1rem 0 3rem 0;
+    display: grid;
+    /* grid-template-columns: 100%; */
+    /* overflow: auto; */
+    /* grid-template-columns: [left] 100px [right] minmax(0, 1fr) [end];
+    grid-template-rows: [top] auto [bottom] auto [end]; */
+    grid-column-gap: 1.2rem;
+    grid-row-gap: .4rem;
+    width: 100%;
+  }
+  button {
+    text-decoration: underline;
+    padding: .4rem 0;
+  }
+</style>
+
+<p-if not="deleted">
+  <template>
+    <article
+      data-attr-arialabelid="aria-labelledby"
+      typeof="SocialMediaPosting">
+      <div>
+        <p-if condition="permalink">
+          <template>
+            <span>
+              /
+              <a data-attr-permalink="href">
+                Permalink
+              </a>
+            </span>
+          </template>
+        </p-if>
+        <p-if condition="canShare">
+          <template>
+            <span>
+              /
+              <a data-attr-shareableurl="href data-share" onclick="event.preventDefault() || navigator.share({ url: event.currentTarget.dataset.share })">
+                Share
+              </a>
+            </span>
+          </template>
+        </p-if>
+      </div>
+      <p-if condition="url">
+        <template>
+          <div
+            property="sharedContent"
+            typeof="Article">
+            <a data-attr-url="href">
+              <h2
+                data-attr-arialabelid="id"
+                property="headline">
+                <slot name="headline"></slot>
+              </h2>
+            </a>
+          </div>
+        </template>
+      </p-if>
+    </article>
+  </template>
+</p-if>

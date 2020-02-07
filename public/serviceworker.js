@@ -13,6 +13,10 @@ const urlsToCache = [
   '/components/card/hn/template.html',
   '/components/list/hn/index.js',
   '/components/list/hn/template.html',
+  '/components/card/headline/index.js',
+  '/components/card/headline/template.html',
+  '/components/list/headline/index.js',
+  '/components/list/headline/template.html',
   '/components/embed/index.js',
   '/components/embed/template.html',
   'https://fonts.googleapis.com/css?family=Kanit:300,800|Lato&display=swap'
